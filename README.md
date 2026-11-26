@@ -19,8 +19,9 @@ docker run -d --name borgbackup \
 ```
 
 Replace `OWNER` with the image owner and use only public keys for trusted
-backup clients. `AUTHORIZED_KEYS` supports multiple newline-separated entries
-in OpenSSH `authorized_keys` format. Environment variables may be visible to
+backup clients. `AUTHORIZED_KEYS` supports multiple entries in OpenSSH
+`authorized_keys` format, separated by newlines or literal `\n` sequences
+(useful for single-line environment fields in TrueNAS). Environment variables may be visible to
 users with access to container configuration. Persist `/host-keys` to avoid
 changing the server fingerprint when the container is recreated; verify the
 fingerprint through a trusted channel before connecting.
@@ -36,7 +37,7 @@ repository path restrictions when appropriate.
 | Variable | Default | Description |
 | --- | --- | --- |
 | `SSH_PORT` | `22` | Port on which sshd listens inside the container. Adjust the container side of `-p` if changed. |
-| `AUTHORIZED_KEYS` | unset | Newline-separated SSH public keys and optional authorized-keys restrictions. |
+| `AUTHORIZED_KEYS` | unset | SSH public keys and optional authorized-keys restrictions, separated by newlines or literal `\n`. |
 
 ## Migration
 

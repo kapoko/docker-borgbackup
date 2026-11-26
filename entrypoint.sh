@@ -7,7 +7,7 @@ mkdir -p /run/sshd
 if [ -n "${AUTHORIZED_KEYS:-}" ]; then
     umask 077
     mkdir -p /root/.ssh
-    printf '%s\n' "$AUTHORIZED_KEYS" > /root/.ssh/authorized_keys
+    printf '%s\n' "$AUTHORIZED_KEYS" | awk '{ gsub(/\\n/, "\n"); print }' > /root/.ssh/authorized_keys
 fi
 
 # Generate a host key if one has not been persisted.
