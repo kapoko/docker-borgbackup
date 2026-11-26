@@ -15,11 +15,10 @@ docker run -d --name borgbackup \
   -e "AUTHORIZED_KEYS=$(cat ./authorized_keys)" \
   -v borg-host-keys:/host-keys \
   -v borg-data:/backup \
-  ghcr.io/OWNER/docker-borgbackup:latest
+  ghcr.io/kapoko/docker-borgbackup:latest
 ```
 
-Replace `OWNER` with the image owner and use only public keys for trusted
-backup clients. `AUTHORIZED_KEYS` supports multiple entries in OpenSSH
+Use only public keys for trusted backup clients. `AUTHORIZED_KEYS` supports multiple entries in OpenSSH
 `authorized_keys` format, separated by newlines or literal `\n` sequences
 (useful for single-line environment fields in TrueNAS). Environment variables may be visible to
 users with access to container configuration. Persist `/host-keys` to avoid
