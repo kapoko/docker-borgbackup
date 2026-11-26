@@ -5,8 +5,19 @@ ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 22
 
 RUN apk add --no-cache openssh borgbackup \
-  && sed -i s/#PasswordAuthentication.*/PasswordAuthentication\ yes/ /etc/ssh/sshd_config \
-  && sed -i s/#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config \
-  && sed -i '/#HostKey\ \/etc\/ssh\/ssh_host_ed25519_key/a HostKey\ \~\/.ssh\/id_ecdsa' /etc/ssh/sshd_config \
-  && echo "root:root" | chpasswd
-
+  && passwd -d root \
+  && mkdir -p /root/.ssh /host-keys \
+  && chmod 700 /root/.ssh \
+  && printf '%s\n' \
+    'HostKey /host-keys/ssh_host_ed25519_key' \
+    'PermitRootLogin prohibit-password' \
+    'PubkeyAuthentication yes' \
+    'PasswordAuthentication no' \
+    'KbdInteractiveAuthentication no' \
+    'PermitEmptyPasswords no' \
+    'AllowTcpForwarding no' \
+    'AllowAgentForwarding no' \
+    'AllowStreamLocalForwarding no' \
+    'X11Forwarding no' \
+    'PermitTunnel no' \
+    > /etc/ssh/sshd_config

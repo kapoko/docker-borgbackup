@@ -1,17 +1,19 @@
 #!/bin/ash
 
-# Generate host keys if not present
-echo "n" | ssh-keygen -t ecdsa -f ~/.ssh/id_ecdsa -q -N ""
+set -eu
 
-# Change port if set
-if [ ${SSH_PORT:-22} != 22 ]; then
-    sed -i s/#Port.*/Port\ $SSH_PORT/ /etc/ssh/sshd_config
+mkdir -p /run/sshd
+
+if [ -n "${AUTHORIZED_KEYS:-}" ]; then
+    umask 077
+    mkdir -p /root/.ssh
+    printf '%s\n' "$AUTHORIZED_KEYS" > /root/.ssh/authorized_keys
 fi
 
-# Change password if set
-if [ ${ROOT_PASSWORD:-"root"} != "root" ]; then
-    echo "root:$ROOT_PASSWORD" | chpasswd
+# Generate a host key if one has not been persisted.
+if [ ! -f /host-keys/ssh_host_ed25519_key ]; then
+    ssh-keygen -t ed25519 -f /host-keys/ssh_host_ed25519_key -q -N ""
 fi
 
 # Do not detach (-D), log to stderr (-e), passthrough other arguments
-exec /usr/sbin/sshd -D -e "$@"
+exec /usr/sbin/sshd -D -e -p "${SSH_PORT:-22}" "$@"
